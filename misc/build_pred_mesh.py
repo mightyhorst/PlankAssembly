@@ -17,7 +17,7 @@ def main():
     filenames = os.listdir(os.path.join(args.exp_path, 'pred_jsons'))
     
     for filename in tqdm(filenames):
-        
+        print(f'📘 filename: {filename}')
         if not filename.endswith('.json'):
             continue
 
@@ -32,10 +32,15 @@ def main():
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--exp_path', type=str, default="lightning_logs/version_X",
-                        help='dataset path.')
+    parser.add_argument(
+        '--exp_path', 
+        type=str, 
+        default="lightning_logs/version_X",
+        help='dataset path.',
+    )
     args = parser.parse_args()
 
+    os.makedirs(os.path.join(args.exp_path, 'pred_jsons'), exist_ok=True)
     os.makedirs(os.path.join(args.exp_path, 'pred_meshes'), exist_ok=True)
 
     main()

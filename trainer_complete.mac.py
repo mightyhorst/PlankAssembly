@@ -32,52 +32,35 @@ class Trainer(pl.LightningModule):
 
         self.criterion = build_criterion()
 
+        # Attribute to accumulate test results
+        self.test_results = []
+
     def train_dataloader(self):
         info_files = parse_splits_list(self.cfg.DATASETS_TRAIN)
         dataset = LineDataset(
-            self.cfg.ROOT, 
-            info_files, 
-            self.cfg.TOKEN, 
-            self.cfg.DATA, 
-            True
-        )
+            self.cfg.ROOT, info_files, self.cfg.TOKEN, self.cfg.DATA, True)
         dataloader = DataLoader(
-            dataset, 
-            batch_size=self.cfg.BATCH_SIZE,
+            dataset, batch_size=self.cfg.BATCH_SIZE,
             num_workers=self.cfg.NUM_WORKERS,
-            shuffle=True, 
-            drop_last=True
-        )
+            shuffle=True, drop_last=True)
         return dataloader
 
     def val_dataloader(self):
         info_files = parse_splits_list(self.cfg.DATASETS_VALID)
         dataset = LineDataset(
-            self.cfg.ROOT, 
-            info_files, 
-            self.cfg.TOKEN, 
-            self.cfg.DATA,
-        )
+            self.cfg.ROOT, info_files, self.cfg.TOKEN, self.cfg.DATA)
         dataloader = DataLoader(
-            dataset, 
-            batch_size=self.cfg.BATCH_SIZE,
-            num_workers=self.cfg.NUM_WORKERS,
-        )
+            dataset, batch_size=self.cfg.BATCH_SIZE,
+            num_workers=self.cfg.NUM_WORKERS)
         return dataloader
 
     def test_dataloader(self):
         info_files = parse_splits_list(self.cfg.DATASETS_TEST)
         dataset = LineDataset(
-            self.cfg.ROOT, 
-            info_files, 
-            self.cfg.TOKEN, 
-            self.cfg.DATA,
-        )
+            self.cfg.ROOT, info_files, self.cfg.TOKEN, self.cfg.DATA)
         dataloader = DataLoader(
-            dataset, 
-            batch_size=self.cfg.BATCH_SIZE,
-            num_workers=self.cfg.NUM_WORKERS,
-        )
+            dataset, batch_size=self.cfg.BATCH_SIZE,
+            num_workers=self.cfg.NUM_WORKERS)
         return dataloader
 
     def training_step(self, batch, batch_idx):
@@ -94,8 +77,6 @@ class Trainer(pl.LightningModule):
         outputs = self.model(batch)
 
         for pred, gt in zip(outputs['predicts'], outputs['groundtruths']):
-
-            # filter invalid prediction
             valid_mask = torch.all(torch.abs(pred[1:, 3:] - pred[1:, :3]) != 0, dim=1)
 
             prec, rec, f1 = self.matcher(pred[1:][valid_mask], gt[1:])
@@ -115,8 +96,6 @@ class Trainer(pl.LightningModule):
             os.makedirs(os.path.join(self.logger.log_dir, 'pred_jsons'), exist_ok=True)
 
         for name, pred, gt, atta in zip(batch['name'], outputs['predicts'], outputs['groundtruths'], outputs['attach']):
-
-            # filter invalid prediction
             valid_mask = torch.all(torch.abs(pred[1:, 3:] - pred[1:, :3]) != 0, dim=1)
             valid_pred = torch.concat((pred[:1], pred[1:][valid_mask]))
 
@@ -137,12 +116,21 @@ class Trainer(pl.LightningModule):
                     "fmeasure": f1.item(),
                 }, f, indent=4, separators=(', ', ': '))
 
-    def test_epoch_end(self, batch):
-        prec, rec, f1 = self.criterion.compute()
+            # Accumulate results for use in `on_test_epoch_end`
+            self.test_results.append({'precision': prec.item(), 'recall': rec.item(), 'fmeasure': f1.item()})
 
-        self.log('test/precision', prec, logger=True, sync_dist=True)
-        self.log('test/recall', rec, logger=True, sync_dist=True)
-        self.log('test/fmeasure', f1, logger=True, sync_dist=True)
+    def on_test_epoch_end(self):
+        # Calculate overall precision, recall, and fmeasure across the test set
+        precision = np.mean([result['precision'] for result in self.test_results])
+        recall = np.mean([result['recall'] for result in self.test_results])
+        fmeasure = np.mean([result['fmeasure'] for result in self.test_results])
+
+        self.log('test/precision', precision, logger=True, sync_dist=True)
+        self.log('test/recall', recall, logger=True, sync_dist=True)
+        self.log('test/fmeasure', fmeasure, logger=True, sync_dist=True)
+
+        # Clear the test results for the next run
+        self.test_results = []
 
     def configure_optimizers(self):
         optimizer = torch.optim.Adam(self.model.parameters(), lr=self.cfg.LR)

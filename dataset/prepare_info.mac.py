@@ -85,9 +85,15 @@ def main(args):
 
     names = [info_file.split('.')[0] for info_file in info_files]
 
-    process_map(
-        prepare_annotation, names,
-        max_workers=args.max_workers, chunksize=args.chunksize)
+    # process_map(
+    #     prepare_annotation, 
+    #     names,
+    #     max_workers=args.max_workers, 
+    #     chunksize=args.chunksize,
+    # )
+    for name in names:
+        print(f'🌳 prepare json for: 👉{name}')
+        prepare_annotation(name)
 
 
 if __name__ == '__main__':

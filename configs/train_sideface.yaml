@@ -17,7 +17,8 @@ trainer:
   num_sanity_val_steps: 0
   strategy: dp
   check_val_every_n_epoch: 20
-  accelerator: gpu
+  # accelerator: gpu
+  accelerator: cpu
   devices: 1
   max_epochs: 1000
 

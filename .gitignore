@@ -1,6 +1,14 @@
+# ignore
+# haters 
+
 # folder
 data
 lightning_logs
+
+# checkpoints
+line_complete-checkpoint_999-precision=0.944-recall=0.934-f1=0.938.ckpt
+line_visible-checkpoint_999-precision=0.860-recall=0.843-f1=0.847.ckpt
+sideface-checkpoint_999-precision=0.944-recall=0.938-f1=0.939.ckpt
 
 # IDE
 .vscode/
@@ -83,7 +91,7 @@ target/
 
 # Jupyter Notebook
 .ipynb_checkpoints
-*.ipynb
+# *.ipynb
 
 # IPython
 profile_default/
