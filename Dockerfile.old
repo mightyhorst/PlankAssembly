@@ -12,14 +12,15 @@ RUN apt-get update && apt-get install -y \
 # 🗂️ Clone the PlankAssembly repository into the workspace
 COPY . .
 
-# 🐍 Install Mamba (faster alternative to Conda)
-RUN /opt/conda/bin/conda install mamba -n base -c conda-forge
-
-# 🐍 Install Conda environment globally with Mamba
+# 🐍 Install Conda environment globally
 COPY environment.yml .
-RUN /opt/conda/bin/mamba env update --name base --file /workspace/environment.yml --prune && \
+RUN /opt/conda/bin/conda env update --name base --file /workspace/environment.yml --prune && \
     /opt/conda/bin/conda init bash && \
     echo "source activate plankassembly" > ~/.bashrc
+
+# 🛠️ Install pip dependencies (if needed)
+# COPY requirements.txt /workspace/
+# RUN pip install -r /workspace/requirements.txt
 
 # 🧩 Set environment variables to persist Conda activation
 ENV PATH /opt/conda/envs/plankassembly/bin:$PATH
