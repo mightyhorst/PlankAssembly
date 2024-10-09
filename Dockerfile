@@ -12,14 +12,21 @@ RUN apt-get update && apt-get install -y \
 # 🗂️ Clone the PlankAssembly repository
 COPY . .
 
-# 🌳 scripts
-RUN sh scripts/step-00-install-deps.sh
-RUN sh scripts/step-01-download-data.sh
-RUN sh scripts/step-02-download-checkpoints.sh
-RUN sh scripts/step-03-generate-data.sh
-RUN sh scripts/step-04-test.sh
-RUN sh scripts/step-05-evaluate.sh
-RUN sh scripts/step-06-html.sh
+# 🌳 Install Conda environment and run scripts
+RUN chmod +x scripts/step-00-install-deps.sh && \
+    ./scripts/step-00-install-deps.sh && \
+    chmod +x scripts/step-01-download-data.sh && \
+    ./scripts/step-01-download-data.sh && \
+    chmod +x scripts/step-02-download-checkpoints.sh && \
+    ./scripts/step-02-download-checkpoints.sh && \
+    chmod +x scripts/step-03-generate-data.sh && \
+    ./scripts/step-03-generate-data.sh && \
+    chmod +x scripts/step-04-test.sh && \
+    ./scripts/step-04-test.sh && \
+    chmod +x scripts/step-05-evaluate.sh && \
+    ./scripts/step-05-evaluate.sh && \
+    chmod +x scripts/step-06-html.sh && \
+    ./scripts/step-06-html.sh
 
 # 👾 Expose port for Jupyter Notebook
 EXPOSE 22
