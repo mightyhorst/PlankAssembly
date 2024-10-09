@@ -12,9 +12,12 @@ RUN apt-get update && apt-get install -y \
 # 🗂️ Clone the PlankAssembly repository
 COPY . .
 
-# 🌳 Install Conda environment and run scripts
-RUN chmod +x scripts/step-00-install-deps.sh && \
-    ./scripts/step-00-install-deps.sh && \
+# 🌳 Install Conda environment and run scripts in one step
+RUN /opt/conda/bin/conda env create --file environment.yml && \
+    /opt/conda/bin/conda init bash && \
+    echo "source activate plankassembly" > ~/.bashrc && \
+    bash -c "source ~/.bashrc && conda activate plankassembly && \
+    conda install -c conda-forge shapely && \
     chmod +x scripts/step-01-download-data.sh && \
     ./scripts/step-01-download-data.sh && \
     chmod +x scripts/step-02-download-checkpoints.sh && \
@@ -26,7 +29,7 @@ RUN chmod +x scripts/step-00-install-deps.sh && \
     chmod +x scripts/step-05-evaluate.sh && \
     ./scripts/step-05-evaluate.sh && \
     chmod +x scripts/step-06-html.sh && \
-    ./scripts/step-06-html.sh
+    ./scripts/step-06-html.sh"
 
 # 👾 Expose port for Jupyter Notebook
 EXPOSE 22
