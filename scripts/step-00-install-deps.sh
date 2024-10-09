@@ -7,11 +7,15 @@
 # Create the conda environment
 conda env create --file environment.yml
 
-# Initialize conda for bash and activate the environment in the same RUN command
-# This avoids needing to "source" .bashrc, which isn't portable in Docker
-RUN echo "conda activate plankassembly" >> ~/.bashrc && \
-    conda init bash && \
-    bash -c "source ~/.bashrc && conda activate plankassembly && conda info --envs"
+# Initialize conda for bash (this adds conda to bashrc for future sessions)
+conda init bash
+
+# Activate the 'plankassembly' environment in this session
+source ~/.bashrc
+conda activate plankassembly
+
+# Show active environments to verify
+conda info --envs
 
 #
 # @step 🗂️ folders

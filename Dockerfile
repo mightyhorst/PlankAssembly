@@ -10,16 +10,16 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # 🐍 Install Mamba (faster alternative to Conda)
-RUN /opt/conda/bin/conda install mamba -n base -c conda-forge
+# RUN /opt/conda/bin/conda install -y mamba -n base -c conda-forge
 
 # 🗂️ Clone the PlankAssembly repository into the workspace
 COPY . .
 
 # 🐍 Create the Conda environment with Mamba and initialize for bash
-COPY environment.yml .
-RUN /opt/conda/bin/mamba env create --file environment.yml && \
-    /opt/conda/bin/conda init bash && \
-    echo "conda activate plankassembly" >> ~/.bashrc
+# COPY environment.yml .
+# RUN /opt/conda/bin/mamba env create --file environment.yml && \
+#     /opt/conda/bin/conda init bash && \
+#     echo "conda activate plankassembly" >> ~/.bashrc
 
 # 🧩 Set environment variables to persist Conda activation
 ENV PATH /opt/conda/envs/plankassembly/bin:$PATH
