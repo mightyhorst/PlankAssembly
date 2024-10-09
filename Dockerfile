@@ -39,21 +39,21 @@ RUN bash -c "source ~/.bashrc && conda activate plankassembly && \
     python misc/build_gt_mesh.py"
 
 # 🧪 Step 6: Test the model
-RUN bash -c "source ~/.bashrc && conda activate plankassembly && \
-    python trainer_complete.py test \
-    --config configs/train_complete.yaml \
-    --trainer.devices 1 \
-    --ckpt_path ./line_complete-checkpoint_999-precision=0.944-recall=0.934-f1=0.938.ckpt"
+# RUN bash -c "source ~/.bashrc && conda activate plankassembly && \
+#     python trainer_complete.py test \
+#     --config configs/train_complete.yaml \
+#     --trainer.devices 1 \
+#     --ckpt_path ./line_complete-checkpoint_999-precision=0.944-recall=0.934-f1=0.938.ckpt"
 
 # 🐿️ Step 7: Evaluate and generate prediction mesh
-RUN bash -c "source ~/.bashrc && conda activate plankassembly && \
-    python misc/build_pred_mesh.py && \
-    python evaluate.py --exp_path ./lightning_logs/version_0 && \
-    python misc/build_html.py --exp_path ./lightning_logs/version_0/"
+# RUN bash -c "source ~/.bashrc && conda activate plankassembly && \
+#     python misc/build_pred_mesh.py && \
+#     python evaluate.py --exp_path ./lightning_logs/version_0 && \
+#     python misc/build_html.py --exp_path ./lightning_logs/version_0/"
 
 # 🌳 Step 8: Generate final HTML report
-RUN bash -c "source ~/.bashrc && conda activate plankassembly && \
-    python misc/build_html.py --exp_path ./lightning_logs/version_0/"
+# RUN bash -c "source ~/.bashrc && conda activate plankassembly && \
+#     python misc/build_html.py --exp_path ./lightning_logs/version_0/"
 
 # 👾 Expose ports for Jupyter Notebook
 EXPOSE 22
