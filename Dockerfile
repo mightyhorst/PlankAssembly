@@ -39,9 +39,9 @@ RUN bash -c "source ~/.bashrc && conda activate plankassembly && \
     python misc/build_gt_mesh.py"
 
 # 🧪 Step 6: Test the model
-# RUN bash -c "source ~/.bashrc && conda activate plankassembly && \
-#     python trainer_complete.py test \
-#     --config configs/train_complete.yaml \
+RUN bash -c "source ~/.bashrc && conda activate plankassembly && \
+    python trainer_complete.py test \
+    --config configs/train_complete.cpu.yaml
 #     --trainer.devices 1 \
 #     --ckpt_path ./line_complete-checkpoint_999-precision=0.944-recall=0.934-f1=0.938.ckpt"
 
